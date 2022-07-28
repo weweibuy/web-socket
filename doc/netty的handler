@@ -1,0 +1,2 @@
+1. WebSocketFrameAggregator
+    作用: 保证过长的消息可以整合和一个完整的消息

@@ -1,4 +1,4 @@
-package com.weweibuy.socket.ws.socketio.socket;
+package com.weweibuy.socket.ws.socketio.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weweibuy.framework.common.core.utils.IdWorker;
@@ -34,7 +34,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @date 2021/12/18 11:20
  **/
 @Slf4j
-public class SocketIoPollReqHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class PollingHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) throws Exception {
@@ -170,5 +170,7 @@ public class SocketIoPollReqHandler extends SimpleChannelInboundHandler<FullHttp
     private byte toChar(int number) {
         return (byte) (number ^ 0x30);
     }
+
+
 
 }

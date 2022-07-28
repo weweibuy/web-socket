@@ -40,6 +40,9 @@ public class SocketIoWebSocketFrameHandler extends SimpleChannelInboundHandler<T
         } else if ("3".equals(text)) {
             return;
         } else if (text.startsWith("42")) {
+            log.info("消息: {}, 长度: {}", text);
+            log.info("长度: {}", text.length());
+
             textWebSocketFrame = new TextWebSocketFrame("42[\"chatevent\",{\"userName\":\"user109\",\"message\":\"111\"}]");
         } else {
             textWebSocketFrame = new TextWebSocketFrame("6");
@@ -55,5 +58,8 @@ public class SocketIoWebSocketFrameHandler extends SimpleChannelInboundHandler<T
     private void ping(ChannelHandlerContext ctx) {
         ctx.writeAndFlush(new TextWebSocketFrame("2"));
     }
+
+
+
 
 }

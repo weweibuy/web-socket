@@ -1,7 +1,7 @@
 package com.weweibuy.socket.ws.socketio;
 
-import com.weweibuy.socket.ws.socketio.handshake.SocketIoHandshakeWebSocketServerProtocolHandler;
-import com.weweibuy.socket.ws.socketio.socket.SocketIoPollReqHandler;
+import com.weweibuy.socket.ws.socketio.handler.WebSocketHandler;
+import com.weweibuy.socket.ws.socketio.handler.PollingHandler;
 import com.weweibuy.socket.ws.socketio.socket.SocketIoWebSocketFrameHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -12,6 +12,8 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolConfig;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 /**
+ * 初始化
+ *
  * @author durenhao
  * @date 2021/12/16 22:13
  **/
@@ -37,17 +39,19 @@ public class SocketIoChannelInitializer extends ChannelInitializer<SocketChannel
                 .forceCloseTimeoutMillis(0L)
                 .handshakeTimeoutMillis(10000L)
                 .decoderConfig(socketDecoderConfig)
+                // 最大长度
+                .maxFramePayloadLength(Integer.MAX_VALUE)
                 .build();
 
-        SocketIoHandshakeWebSocketServerProtocolHandler socketIoHandshakeWebSocketServerProtocolHandler =
-                new SocketIoHandshakeWebSocketServerProtocolHandler(config);
+        WebSocketHandler socketIoHandshakeWebSocketServerProtocolHandler =
+                new WebSocketHandler(config);
 
         ch.pipeline()
                 .addLast(HttpServerCodec.class.getName(), new HttpServerCodec())
                 .addLast(HttpObjectAggregator.class.getName(), new HttpObjectAggregator(8192))
                 .addLast(ChunkedWriteHandler.class.getName(), new ChunkedWriteHandler())
-                .addLast(SocketIoHandshakeWebSocketServerProtocolHandler.class.getName(), socketIoHandshakeWebSocketServerProtocolHandler)
-                .addLast(SocketIoPollReqHandler.class.getName(), new SocketIoPollReqHandler())
+                .addLast(PollingHandler.class.getName(), new PollingHandler())
+                .addLast(WebSocketHandler.class.getName(), socketIoHandshakeWebSocketServerProtocolHandler)
                 .addLast(SocketIoWebSocketFrameHandler.class.getName(), new SocketIoWebSocketFrameHandler());
 
     }

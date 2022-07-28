@@ -1,23 +1,22 @@
-package com.weweibuy.socket.ws.socketio.handshake;
+package com.weweibuy.socket.ws.socketio.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.websocketx.CustomWebSocketServerProtocolHandshakeHandler;
-import io.netty.handler.codec.http.websocketx.Utf8FrameValidator;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolConfig;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.codec.http.websocketx.*;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * websocket 握手处理
+ * socket.io 握手处理
  *
  * @author durenhao
  * @date 2021/12/16 22:27
  **/
-public class SocketIoHandshakeWebSocketServerProtocolHandler extends WebSocketServerProtocolHandler {
+@Slf4j
+public class WebSocketHandler extends WebSocketServerProtocolHandler {
 
     private WebSocketServerProtocolConfig socketServerProtocolConfig;
 
-    public SocketIoHandshakeWebSocketServerProtocolHandler(WebSocketServerProtocolConfig serverConfig) {
+    public WebSocketHandler(WebSocketServerProtocolConfig serverConfig) {
         super(serverConfig);
         this.socketServerProtocolConfig = serverConfig;
     }
@@ -37,4 +36,20 @@ public class SocketIoHandshakeWebSocketServerProtocolHandler extends WebSocketSe
                     new Utf8FrameValidator());
         }
     }
+
+    /**
+     * Gets called if an user event was triggered.
+     */
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+        // websocket 握手完成
+        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
+            log.info("webSocket 握手完成");
+            // 保证过长的消息可以整合和一个完整的消息
+            ctx.pipeline().addBefore(WebSocketHandler.class.getName(),
+                    WebSocketFrameAggregator.class.getName(),
+                    new WebSocketFrameAggregator(Integer.MAX_VALUE));
+        }
+
+    }
+
 }
