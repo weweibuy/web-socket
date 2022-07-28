@@ -1,0 +1,6 @@
+1. 客户端发送Get请求  服务端响应, sid(客户端id), 连接websocket协议
+2. 客户端发送Post请求,携带sid,请求体: 40 + namespace,请求连接namespace, 服务端响应ok
+3. 客户端发送Get请求,携带sid, 服务端响应: 40 + namespace, 表示批准名称空间连接
+4. 客户端发送协议升级请求, 与服务端建立websocket 协议
+5. 服务端定时 ping客户端
+6. 当websocket已经建立, polling 的请求, 响应 6, 否则前端会多次回调连接

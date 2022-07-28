@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>socketio测绘</title>
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+
+<table>
+    <tr>
+        <td>
+            <label for="messageArea">聊天信息:</label><textarea id="messageArea" cols="50" rows="30"></textarea></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="username">用 户 名:</label><input type="text" id="username"></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <input type="button" id="joinRoomBtn" value="进入聊天室"/>
+            <input type="button" id="leaveRoomBtn" value="离开聊天室"/></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="sendMessage">输入消息:</label><textarea id="sendMessage" cols="50" rows="3"></textarea></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <input type="button" id="sendBtn" value="发送消息"/>
+        </td>
+    </tr>
+</table>
+</body>
+
+
+<script>
+    $(function () {
+        const { Manager } = require("socket.io-client");
+        var url = 'ws://localhost:8080';
+        const manager = new Manager(url);
+        const socket = manager.socket("/"); // main namespace
+        //进入聊天室
+        $('#joinRoomBtn').click(function () {
+            var username = $('#username').val();
+        });
+        socket.on('connect', function (sock) {
+            alert('webSocket连接创建。。。');
+            console.log('webSocket连接创建。。。');
+        })
+        socket.on('disconnect', function (sock) {
+            alert('[' + username + ']离开了聊天室\n');
+
+            $('#messageArea').append('[' + username + ']离开了聊天室\n');
+        })
+        socket.on("message", function (data) {
+            $('#messageArea').append(data + '\n');
+        })
+        //退出聊天室
+        $('#leaveRoomBtn').click(function () {
+            if (socket) {
+                //关闭连接
+                socket.disconnect();
+            }
+        });
+        //发送消息
+        $('#sendBtn').click(function () {
+            var msg = $('#sendMessage').val();
+            socket.send("Hello!");
+            socket.emit('message', msg, {"mr": "john"}, Uint8Array.from([1, 2, 3, 4]))
+
+            $('#sendMessage').val('');
+        });
+    });
+</script>
+
+</html>
